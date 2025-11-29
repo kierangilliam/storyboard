@@ -1,0 +1,3 @@
+_simple_tts:
+  voice_id: "{$character.tts.voice}"
+  prompt: "{$character.tts.style}:\\n\\n{$content}"

@@ -1,0 +1,4 @@
+characters: ./bad_ref_characters.yaml
+image_templates: ../valid/image_templates.yaml
+tts_templates: ../valid/tts_templates.yaml
+scenes: ./bad_ref_scenes.yaml

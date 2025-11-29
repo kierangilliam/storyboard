@@ -1,0 +1,8 @@
+_test_scene:
+  name: Test Scene
+  frames:
+    _test_frame:
+      image:
+        template: _simple_template
+        $char_ref: "@characters._nonexistent.reference_photo"
+        $backdrop: "A backdrop"

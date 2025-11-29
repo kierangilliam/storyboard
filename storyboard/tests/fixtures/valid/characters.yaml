@@ -1,0 +1,6 @@
+_simple_char:
+  name: Simple Character
+  reference_photo: ../assets/test_image.png
+  tts:
+    style: "Test narration style"
+    voice: Fenrir

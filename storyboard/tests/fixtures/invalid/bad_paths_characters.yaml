@@ -1,0 +1,6 @@
+_test_char:
+  name: Test Character
+  reference_photo: ./nonexistent.png
+  tts:
+    style: "Test style"
+    voice: Fenrir

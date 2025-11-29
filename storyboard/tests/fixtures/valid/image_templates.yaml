@@ -1,0 +1,2 @@
+_simple_template:
+  instructions: "Test instruction with [image $char_ref] and backdrop {$backdrop}"

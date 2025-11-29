@@ -1,0 +1,10 @@
+characters: ../valid/characters.yaml
+image_templates: ../valid/image_templates.yaml
+tts_templates: ../valid/tts_templates.yaml
+scenes: ../valid/scenes.yaml
+
+config:
+  image:
+    default_model:
+      vendor: openai
+      model: dall-e-3

@@ -1,0 +1,11 @@
+characters: ./characters.yaml
+image_templates: ./image_templates.yaml
+tts_templates: ./tts_templates.yaml
+scenes: ./scenes.yaml
+
+config:
+  output:
+    directory: ./output
+    cache:
+      images: .cache/images
+      audio: .cache/audio

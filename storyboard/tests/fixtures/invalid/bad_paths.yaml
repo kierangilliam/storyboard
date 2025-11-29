@@ -1,0 +1,4 @@
+characters: ./bad_paths_characters.yaml
+image_templates: ../valid/image_templates.yaml
+tts_templates: ../valid/tts_templates.yaml
+scenes: ../valid/scenes.yaml

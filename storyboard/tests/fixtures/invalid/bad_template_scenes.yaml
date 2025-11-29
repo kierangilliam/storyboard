@@ -1,0 +1,7 @@
+_test_scene:
+  name: Test Scene
+  frames:
+    _test_frame:
+      image:
+        template: _simple_template
+        $char_ref: "@characters._simple_char.reference_photo"

@@ -1,0 +1,12 @@
+_simple_scene:
+  name: Simple Scene
+  frames:
+    _simple_frame:
+      image:
+        template: _simple_template
+        $char_ref: "@characters._simple_char.reference_photo"
+        $backdrop: "A simple backdrop"
+      tts:
+        template: _simple_tts
+        $character: "@characters._simple_char"
+        $content: "Simple test dialogue"

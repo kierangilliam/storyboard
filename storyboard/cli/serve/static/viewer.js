@@ -3,6 +3,7 @@ const state = {
   scenes: [],
   currentScene: null,
   currentFrameIndex: 0,
+  isFirstRender: true,
 };
 
 async function init() {
@@ -132,6 +133,7 @@ async function loadPreviewImages() {
 
 // Navigate to scene viewer
 function navigateToScene(sceneId) {
+  state.isFirstRender = true;
   window.history.pushState({}, "", `/scene/${sceneId}`);
   loadScene(sceneId).then(() => {
     renderSceneViewer();
@@ -154,8 +156,10 @@ function renderSceneViewer() {
   );
   const frameNumber = state.currentFrameIndex + 1;
 
+  const animateClass = state.isFirstRender ? ' animate-in' : '';
+
   let html = `
-        <div class="viewer-container">
+        <div class="viewer-container${animateClass}">
             <div class="viewer-header">
                 <button class="back-button" onclick="goHome()">← Back to Scenes</button>
                 <div class="scene-title">
@@ -199,10 +203,28 @@ function renderSceneViewer() {
   if (hasAudio) {
     const audioPath = encodeURIComponent(frame.assets.audio.path);
     html += `
-                        <audio id="audio-player" controls>
+                        <audio id="audio-player">
                             <source src="/api/asset?path=${audioPath}" type="audio/wav">
-                            Your browser does not support the audio element.
                         </audio>
+                        <div class="audio-player-container">
+                            <button class="play-pause-btn" onclick="togglePlayPause()" aria-label="Play/Pause">
+                                <svg id="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <svg id="pause-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                                    <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
+                                </svg>
+                            </button>
+                            <div class="audio-timeline">
+                                <div class="audio-progress" onclick="seekAudio(event)">
+                                    <div class="audio-progress-bar" id="audio-progress-bar"></div>
+                                </div>
+                                <div class="audio-time">
+                                    <span id="current-time">0:00</span>
+                                    <span id="total-time">0:00</span>
+                                </div>
+                            </div>
+                        </div>
         `;
   } else {
     html += `
@@ -232,6 +254,92 @@ function renderSceneViewer() {
     `;
 
   app.innerHTML = html;
+
+  // Initialize audio player if audio exists
+  if (hasAudio) {
+    initAudioPlayer();
+  }
+
+  // Mark that first render is complete
+  if (state.isFirstRender) {
+    state.isFirstRender = false;
+  }
+}
+
+// Audio player functions
+function initAudioPlayer() {
+  const audio = document.getElementById("audio-player");
+  if (!audio) return;
+
+  // Update time display
+  audio.addEventListener("loadedmetadata", () => {
+    const totalTime = document.getElementById("total-time");
+    if (totalTime) {
+      totalTime.textContent = formatTime(audio.duration);
+    }
+  });
+
+  // Update progress bar
+  audio.addEventListener("timeupdate", () => {
+    const progressBar = document.getElementById("audio-progress-bar");
+    const currentTime = document.getElementById("current-time");
+
+    if (progressBar && audio.duration) {
+      const progress = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    if (currentTime) {
+      currentTime.textContent = formatTime(audio.currentTime);
+    }
+  });
+
+  // Reset play/pause icons when audio ends
+  audio.addEventListener("ended", () => {
+    const playIcon = document.getElementById("play-icon");
+    const pauseIcon = document.getElementById("pause-icon");
+    if (playIcon && pauseIcon) {
+      playIcon.style.display = "block";
+      pauseIcon.style.display = "none";
+    }
+  });
+}
+
+function togglePlayPause() {
+  const audio = document.getElementById("audio-player");
+  const playIcon = document.getElementById("play-icon");
+  const pauseIcon = document.getElementById("pause-icon");
+
+  if (!audio || !playIcon || !pauseIcon) return;
+
+  if (audio.paused) {
+    audio.play();
+    playIcon.style.display = "none";
+    pauseIcon.style.display = "block";
+  } else {
+    audio.pause();
+    playIcon.style.display = "block";
+    pauseIcon.style.display = "none";
+  }
+}
+
+function seekAudio(event) {
+  const audio = document.getElementById("audio-player");
+  const progressBar = event.currentTarget;
+
+  if (!audio || !progressBar) return;
+
+  const rect = progressBar.getBoundingClientRect();
+  const pos = (event.clientX - rect.left) / rect.width;
+  audio.currentTime = pos * audio.duration;
+}
+
+function formatTime(seconds) {
+  if (isNaN(seconds)) return "0:00";
+
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
 // Navigate between frames
@@ -262,7 +370,11 @@ function autoAdvanceToNextScene() {
 
   if (currentIndex < state.scenes.length - 1) {
     const nextScene = state.scenes[currentIndex + 1];
-    navigateToScene(nextScene.scene_id);
+    // Don't animate when advancing from one scene to another
+    window.history.pushState({}, "", `/scene/${nextScene.scene_id}`);
+    loadScene(nextScene.scene_id).then(() => {
+      renderSceneViewer();
+    });
   } else {
     // Last scene - show completion message
     alert("End of story!");
@@ -277,6 +389,7 @@ async function goToPreviousScene() {
 
   if (currentIndex > 0) {
     const previousScene = state.scenes[currentIndex - 1];
+    // Don't animate when going back from one scene to another
     await loadScene(previousScene.scene_id);
     // Set to last frame of previous scene
     state.currentFrameIndex = state.currentScene.frames.length - 1;
@@ -292,6 +405,7 @@ function goHome() {
   window.history.pushState({}, "", "/");
   state.currentScene = null;
   state.currentFrameIndex = 0;
+  state.isFirstRender = true;
   renderHome();
 }
 

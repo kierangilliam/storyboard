@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from storyboard.cli.image.image_command import image_command
 from storyboard.cli.init.init_command import init_command
 from storyboard.cli.run.run_command import run_command
+from storyboard.cli.serve.serve_command import serve_command
 from storyboard.cli.tts.tts_command import tts_command
 
 load_dotenv()
@@ -122,6 +123,22 @@ def main():
             help="Cache directory for generated images",
         )
 
+        # Serve command
+        serve_parser = subparsers.add_parser(
+            "serve", help="Start web server to view generated scenes"
+        )
+        serve_parser.add_argument(
+            "--scene-folder",
+            required=True,
+            help="Path to output directory containing metadata.json",
+        )
+        serve_parser.add_argument(
+            "--port",
+            type=int,
+            default=6767,
+            help="Server port (default: 6767)",
+        )
+
         # Parse arguments
         args = parser.parse_args()
 
@@ -134,6 +151,8 @@ def main():
             return tts_command(args)
         elif args.command == "image":
             return image_command(args)
+        elif args.command == "serve":
+            return serve_command(args)
         else:
             parser.print_help()
             return 1

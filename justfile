@@ -4,6 +4,9 @@ default:
 run-example:
     uv run storyboard run --root-dir example
 
+serve-example:
+    uv run storyboard serve --scene-folder example/output
+
 init-test:
     rm -rf test-project
     uv run storyboard init --name test-project

@@ -1,0 +1,288 @@
+/* Global styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: #222;
+}
+
+/* Scene grid (home page) */
+.scene-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.scene-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.scene-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.scene-preview {
+    width: 100%;
+    height: 200px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.scene-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scene-preview .loading {
+    color: #999;
+}
+
+.scene-info {
+    padding: 15px;
+}
+
+.scene-info h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.scene-info p {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Scene viewer */
+.viewer-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.viewer-header {
+    background: white;
+    border-bottom: 1px solid #ddd;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.back-button {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+}
+
+.back-button:hover {
+    background: #e0e0e0;
+}
+
+.scene-title h2 {
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.frame-info {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Frame viewer */
+.frame-viewer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px 120px;
+}
+
+.frame-image-container {
+    max-width: 100%;
+    max-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.frame-image {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.no-image {
+    padding: 60px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    color: #999;
+    text-align: center;
+}
+
+/* Combined controls bar */
+.controls-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #333;
+    padding: 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.controls-bar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* Audio controls on the left */
+.audio-controls {
+    flex: 1;
+    min-width: 0;
+}
+
+#audio-player {
+    width: 100%;
+    max-width: 400px;
+}
+
+.no-audio {
+    color: #999;
+    font-size: 14px;
+}
+
+/* Scene info in the middle */
+.scene-info-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.scene-number {
+    font-size: 14px;
+    color: #aaa;
+    font-weight: 500;
+}
+
+.frame-counter {
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Navigation controls on the right */
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-controls button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.nav-controls button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.nav-controls button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .scene-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .viewer-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .frame-image {
+        max-height: 50vh;
+    }
+
+    .controls-bar-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .audio-controls {
+        width: 100%;
+    }
+
+    #audio-player {
+        max-width: 100%;
+    }
+
+    .scene-info-bar {
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .nav-controls {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .nav-controls button {
+        flex: 1;
+    }
+}

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Literal, TypeAlias
 
 from pydantic import AfterValidator, BaseModel, Field, field_validator, model_validator
 from pydantic.functional_serializers import PlainSerializer
@@ -11,19 +11,30 @@ def _validate_non_whitespace_only(v: str) -> str:
     return v
 
 
+def _validate_path_format(v: str) -> str:
+    if not v.strip():
+        raise ValueError("Path cannot be empty")
+    try:
+        Path(v)
+    except Exception as e:
+        raise ValueError(f"Invalid path format: {v}") from e
+    return v
+
+
 NonEmptyStr = Annotated[str, Field(min_length=1), AfterValidator(_validate_non_whitespace_only)]
+PathStr = Annotated[str, AfterValidator(_validate_path_format)]
 
 # Type definitions for vendors, models, and voices
-ImageVendor = Literal["gemini"]
-ImageModel = Literal["gemini-3-pro-image-preview", "gemini-2.5-flash-image"]
+ImageVendor: TypeAlias = Literal["gemini"]
+ImageModel: TypeAlias = Literal["gemini-3-pro-image-preview", "gemini-2.5-flash-image"]
 
-TTSVendor = Literal["gemini"]
-TTSModel = Literal[
+TTSVendor: TypeAlias = Literal["gemini"]
+TTSModel: TypeAlias = Literal[
     "gemini-2.5-flash-preview-tts",
     "gemini-2.5-pro-tts",
     "gemini-2.5-flash-lite-preview-tts",
 ]
-TTSVoice = Literal[
+TTSVoice: TypeAlias = Literal[
     "Aoede",
     "Kore",
     "Fenrir",
@@ -52,42 +63,22 @@ class CharacterTTSConfig(BaseModel):
 class Character(BaseModel):
     id: NonEmptyStr
     name: NonEmptyStr
-    reference_photo: NonEmptyStr
+    reference_photo: PathStr
     tts: CharacterTTSConfig | None = None
-
-    @field_validator("reference_photo")
-    @classmethod
-    def validate_reference_photo_path(cls, v: str) -> str:
-        try:
-            Path(v)
-        except Exception as e:
-            raise ValueError(f"Invalid path format: {v}") from e
-        return v
 
 
 class ImageTemplatePart(BaseModel):
     type: Literal["prompt", "image"]
     content: str
     key: str | None = Field(
-        None, description="Variable key (e.g., 'character_reference')"
+        None,
+        description="Variable key (e.g., 'character_reference')",
+        pattern=r"^[a-zA-Z0-9_-]+$",
+        min_length=1,
     )
-
-    @field_validator("key")
-    @classmethod
-    def validate_key(cls, v: str | None) -> str | None:
-        if v is not None:
-            if not v or not v.strip():
-                raise ValueError("key cannot be empty string")
-            if not v.replace("_", "").replace("-", "").isalnum():
-                raise ValueError(
-                    f"key must contain only alphanumeric characters, hyphens, and underscores: '{v}'"
-                )
-        return v
 
     @model_validator(mode="after")
     def validate_content_key_relationship(self):
-        # If there's a key, content can be empty (it's a template variable)
-        # If there's no key, content must not be empty (it's a static value)
         if self.key is None and (not self.content or not self.content.strip()):
             raise ValueError("content cannot be empty when key is not provided")
         return self
@@ -95,15 +86,8 @@ class ImageTemplatePart(BaseModel):
 
 class ImageTemplate(BaseModel):
     id: NonEmptyStr
-    parts: list[ImageTemplatePart] = Field(default_factory=list)
+    parts: list[ImageTemplatePart] = Field(min_length=1)
     prompt: list[str | dict[str, str]] | None = None
-
-    @field_validator("parts")
-    @classmethod
-    def validate_parts(cls, v: list[ImageTemplatePart]) -> list[ImageTemplatePart]:
-        if not v:
-            raise ValueError("parts list cannot be empty")
-        return v
 
 
 class Assets(BaseModel):
@@ -131,35 +115,13 @@ class Scene(BaseModel):
 
 
 class OutputCacheConfig(BaseModel):
-    images: str = ".storyboard/generated/images"
-    audio: str = ".storyboard/generated/audio"
-
-    @field_validator("images", "audio")
-    @classmethod
-    def validate_path_string(cls, v: str) -> str:
-        if not v:
-            raise ValueError("Path cannot be empty")
-        try:
-            Path(v)
-        except Exception as e:
-            raise ValueError(f"Invalid path format: {v}") from e
-        return v
+    images: PathStr = ".storyboard/generated/images"
+    audio: PathStr = ".storyboard/generated/audio"
 
 
 class OutputConfig(BaseModel):
-    directory: str = "./output"
+    directory: PathStr = "./output"
     cache: OutputCacheConfig = Field(default_factory=OutputCacheConfig)
-
-    @field_validator("directory")
-    @classmethod
-    def validate_directory_path(cls, v: str) -> str:
-        if not v:
-            raise ValueError("Directory path cannot be empty")
-        try:
-            Path(v)
-        except Exception as e:
-            raise ValueError(f"Invalid directory path format: {v}") from e
-        return v
 
 
 class ImageModelRefConfig(BaseModel):
@@ -174,14 +136,7 @@ class TTSModelRefConfig(BaseModel):
 
 class ImageOptimizeConfig(BaseModel):
     enabled: bool = True
-    quality: int = 80
-
-    @field_validator("quality")
-    @classmethod
-    def validate_quality(cls, v: int) -> int:
-        if not 1 <= v <= 100:
-            raise ValueError(f"quality must be between 1 and 100, got {v}")
-        return v
+    quality: int = Field(default=80, ge=1, le=100)
 
 
 class ImageGenerationConfig(BaseModel):
@@ -191,14 +146,7 @@ class ImageGenerationConfig(BaseModel):
 
 class TTSOptimizeConfig(BaseModel):
     enabled: bool = True
-    quality: int = 8
-
-    @field_validator("quality")
-    @classmethod
-    def validate_quality(cls, v: int) -> int:
-        if v < 1:
-            raise ValueError(f"quality must be at least 1, got {v}")
-        return v
+    quality: int = Field(default=8, ge=1)
 
 
 class TTSGenerationConfig(BaseModel):
@@ -208,42 +156,14 @@ class TTSGenerationConfig(BaseModel):
 
 class RetryConfig(BaseModel):
     enabled: bool = True
-    max_attempts: int = 3
-    delay_seconds: int = 2
-
-    @field_validator("max_attempts")
-    @classmethod
-    def validate_max_attempts(cls, v: int) -> int:
-        if v < 1:
-            raise ValueError(f"max_attempts must be at least 1, got {v}")
-        return v
-
-    @field_validator("delay_seconds")
-    @classmethod
-    def validate_delay_seconds(cls, v: int) -> int:
-        if v < 0:
-            raise ValueError(f"delay_seconds cannot be negative, got {v}")
-        return v
+    max_attempts: int = Field(default=3, ge=1)
+    delay_seconds: int = Field(default=2, ge=0)
 
 
 class GenerationConfig(BaseModel):
-    max_concurrent: int = 10
-    timeout_seconds: int = 120
+    max_concurrent: int = Field(default=10, ge=1)
+    timeout_seconds: int = Field(default=120, ge=1)
     retry: RetryConfig = Field(default_factory=RetryConfig)
-
-    @field_validator("max_concurrent")
-    @classmethod
-    def validate_max_concurrent(cls, v: int) -> int:
-        if v < 1:
-            raise ValueError(f"max_concurrent must be at least 1, got {v}")
-        return v
-
-    @field_validator("timeout_seconds")
-    @classmethod
-    def validate_timeout_seconds(cls, v: int) -> int:
-        if v < 1:
-            raise ValueError(f"timeout_seconds must be at least 1, got {v}")
-        return v
 
 
 class StoryboardConfig(BaseModel):

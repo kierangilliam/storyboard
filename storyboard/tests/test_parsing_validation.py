@@ -52,7 +52,7 @@ def test_invalid_quality_range():
     with pytest.raises(ValidationError) as exc_info:
         StoryboardConfig(image={"optimize": {"enabled": True, "quality": 101}})
     error_msg: str = str(exc_info.value)
-    assert "quality must be between 1 and 100, got 101" in error_msg
+    assert "less than or equal to 100" in error_msg
 
 
 def test_invalid_retry_config():
@@ -63,7 +63,7 @@ def test_invalid_retry_config():
             }
         )
     error_msg: str = str(exc_info.value)
-    assert "max_attempts must be at least 1, got 0" in error_msg
+    assert "greater than or equal to 1" in error_msg
 
 
 def test_invalid_reference_section():
@@ -415,17 +415,14 @@ def test_image_template_part_key_validation():
     with pytest.raises(ValidationError) as exc_info:
         ImageTemplatePart(type="prompt", content="test", key="invalid key!")
     error_msg: str = str(exc_info.value)
-    assert (
-        "key must contain only alphanumeric characters, hyphens, and underscores"
-        in error_msg
-    )
+    assert "String should match pattern" in error_msg
 
 
 def test_image_template_requires_non_empty_parts():
     with pytest.raises(ValidationError) as exc_info:
         ImageTemplate(id="test", parts=[])
     error_msg: str = str(exc_info.value)
-    assert "parts list cannot be empty" in error_msg
+    assert "List should have at least 1 item" in error_msg
 
 
 def test_image_config_requires_dollar_prefix(tmp_path: Path, test_image_file: Path):

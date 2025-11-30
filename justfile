@@ -2,7 +2,7 @@ default:
     @just --list
 
 run-example:
-    uv run storyboard run --input content/main.yaml --output output --root-dir example
+    uv run storyboard run --root-dir example
 
 init-test:
     rm -rf test-project

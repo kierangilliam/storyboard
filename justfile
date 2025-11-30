@@ -10,6 +10,12 @@ run-example:
 serve-example:
     uv run storyboard serve --scene-folder example/output
 
+update-example:
+    uv run storyboard update --root-dir example
+
+composite-example:
+    uv run storyboard composite movie --scene-folder example/output --input example/content/main.yaml
+
 init-test:
     rm -rf test-project
     uv run storyboard init --name test-project

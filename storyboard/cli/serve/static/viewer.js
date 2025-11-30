@@ -156,7 +156,7 @@ function renderSceneViewer() {
   );
   const frameNumber = state.currentFrameIndex + 1;
 
-  const animateClass = state.isFirstRender ? ' animate-in' : '';
+  const animateClass = state.isFirstRender ? " animate-in" : "";
 
   let html = `
         <div class="viewer-container${animateClass}">
@@ -164,7 +164,7 @@ function renderSceneViewer() {
                 <button class="back-button" onclick="goHome()">← Back to Scenes</button>
                 <div class="scene-title">
                     <h2>${state.currentScene.scene_name}</h2>
-                    <p class="frame-info">Frame ${frameNumber} of ${totalFrames}</p>
+                    <p class="scene-id-info">${state.currentScene.scene_id}.${frame.frame_id}</p>
                 </div>
             </div>
 
@@ -354,7 +354,10 @@ function seekAudio(event) {
   if (!audio || !audio.duration) return;
 
   const rect = event.currentTarget.getBoundingClientRect();
-  const pos = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const pos = Math.max(
+    0,
+    Math.min(1, (event.clientX - rect.left) / rect.width)
+  );
   audio.currentTime = pos * audio.duration;
 }
 

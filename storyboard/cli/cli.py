@@ -6,6 +6,7 @@ import sys
 
 from dotenv import load_dotenv
 
+from storyboard.cli.composite.composite_command import composite_command
 from storyboard.cli.image.image_command import image_command
 from storyboard.cli.init.init_command import init_command
 from storyboard.cli.run.run_command import run_command
@@ -139,6 +140,69 @@ def main():
             help="Server port (default: 6767)",
         )
 
+        # Update command
+        update_parser = subparsers.add_parser(
+            "update",
+            help="Regenerate specific scene frame assets (bypasses cache by default)",
+        )
+        update_parser.add_argument(
+            "selector",
+            nargs="?",
+            help=(
+                "Frame selector: 'scene_id.frame_id', 'scene_id.frame_id.image', "
+                "or 'scene_id.frame_id.tts'. "
+                "If omitted, interactive mode will prompt for selection."
+            ),
+        )
+        update_parser.add_argument(
+            "--input",
+            help="Path to main.yaml file (default: content/main.yaml)",
+            default="content/main.yaml",
+        )
+        update_parser.add_argument(
+            "--output",
+            default="./output",
+            help="Output directory (default: ./output)",
+        )
+        update_parser.add_argument(
+            "--root-dir",
+            help="Root directory for resolving relative paths in SDL (default: parent directory of input file)",
+        )
+        update_parser.add_argument(
+            "--use-cache",
+            action="store_true",
+            help="Use cached assets if available (default: always regenerate)",
+        )
+
+        # Composite command
+        composite_parser = subparsers.add_parser(
+            "composite", help="Create composite videos from generated scenes"
+        )
+        composite_subparsers = composite_parser.add_subparsers(
+            dest="composite_command", help="Composite subcommands"
+        )
+
+        movie_parser = composite_subparsers.add_parser(
+            "movie", help="Create a movie from all scenes"
+        )
+        movie_parser.add_argument(
+            "--scene-folder",
+            required=True,
+            help="Path to output directory containing metadata.json",
+        )
+        movie_parser.add_argument(
+            "--output",
+            help="Output path for movie file (default: output/movie.mp4)",
+        )
+        movie_parser.add_argument(
+            "--resolution",
+            help="Video resolution in WxH format (e.g., 1920x1080)",
+        )
+        movie_parser.add_argument(
+            "--input",
+            help="Path to SDL file for loading config (default: content/main.yaml)",
+        )
+
         # Parse arguments
         args = parser.parse_args()
 
@@ -153,6 +217,12 @@ def main():
             return image_command(args)
         elif args.command == "serve":
             return serve_command(args)
+        elif args.command == "update":
+            from storyboard.cli.update.update_command import update_command
+
+            return update_command(args)
+        elif args.command == "composite":
+            return composite_command(args)
         else:
             parser.print_help()
             return 1

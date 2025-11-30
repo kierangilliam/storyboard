@@ -62,7 +62,11 @@ class TerminalUI:
         self.live: Live | None = None
 
     def initialize_scene(
-        self, scene_id: str, scene_name: str, frame_ids: list[str], has_audio: dict[str, bool] | None = None
+        self,
+        scene_id: str,
+        scene_name: str,
+        frame_ids: list[str],
+        has_audio: dict[str, bool] | None = None,
     ) -> None:
         """Initialize a scene with its frames.
 
@@ -76,7 +80,9 @@ class TerminalUI:
         frames = {
             fid: FrameState(
                 frame_id=fid,
-                audio=AssetState("audio", "pending") if has_audio.get(fid, False) else None
+                audio=AssetState("audio", "pending")
+                if has_audio.get(fid, False)
+                else None,
             )
             for fid in frame_ids
         }
@@ -252,11 +258,14 @@ class TerminalUI:
             text.append(f"{scene.scene_name}", style="green bold")
             text.append(f" ({scene.frame_count} frames)", style="dim")
         elif scene.status == "in_progress":
-            text.append(f"{scene.scene_name} - IN PROGRESS\n", style="yellow bold")
+            text.append("⏳ ", style="yellow bold")
+            text.append(f"{scene.scene_name}\n", style="yellow bold")
         elif scene.status == "failed":
-            text.append(f"{scene.scene_name} - FAILED\n", style="red bold")
+            text.append("✗ ", style="red bold")
+            text.append(f"{scene.scene_name}\n", style="red bold")
         else:
-            text.append(f"{scene.scene_name} - PENDING\n", style="dim")
+            text.append("○ ", style="dim")
+            text.append(f"{scene.scene_name}\n", style="dim")
 
         if scene.status in SHOW_FRAMES_STATUSES:
             for frame in scene.frames.values():

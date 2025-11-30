@@ -243,10 +243,49 @@ class ParallelSceneGenerator:
             failed_assets=failed_assets,
         )
 
+    async def generate_frame_selective(
+        self,
+        scene_id: str,
+        frame_id: str,
+        scene_output_path: str,
+        asset_types: set[Literal["image", "audio"]] | None = None,
+        use_cached: bool = True,
+    ) -> tuple[FrameResult, list[AssetTask]]:
+        """Generate specific frame by IDs with selective asset types."""
+        # Find scene by ID
+        scene = next((s for s in self.scene_graph.scenes if s.id == scene_id), None)
+        if not scene:
+            raise ValueError(f"Scene not found: {scene_id}")
+
+        # Find frame by ID
+        frame = next((f for f in scene.frames if f.id == frame_id), None)
+        if not frame:
+            raise ValueError(f"Frame not found in scene {scene_id}: {frame_id}")
+
+        # Create output directory
+        scene_output_dir = Path(scene_output_path)
+        scene_output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Delegate to modified generate_frame_assets
+        return await self.generate_frame_assets(
+            frame=frame,
+            scene_output_path=str(scene_output_dir),
+            asset_types=asset_types,
+            use_cached=use_cached,
+        )
+
     async def generate_frame_assets(
-        self, frame: Frame, scene_output_path: str
+        self,
+        frame: Frame,
+        scene_output_path: str,
+        asset_types: set[Literal["image", "audio"]] | None = None,
+        use_cached: bool = True,
     ) -> tuple[FrameResult, list[AssetTask]]:
         """Generate image and audio assets for a frame in parallel."""
+        # Default to both asset types for backward compatibility
+        if asset_types is None:
+            asset_types = {"image", "audio"}
+
         # Create frame-specific directory
         frame_output_dir = Path(scene_output_path) / frame.id
         frame_output_dir.mkdir(parents=True, exist_ok=True)
@@ -265,45 +304,60 @@ class ParallelSceneGenerator:
         if template is None:
             raise ValueError(f"Image template not found: {template_id}")
 
-        # Create asset tasks
-        image_task = AssetTask(
-            scene_id=frame.scene_id, frame_id=frame.id, asset_type="image"
-        )
-
+        # Create asset tasks based on requested types
+        image_task = None
         audio_task = None
-        tasks = [
-            self._generate_image_asset(
-                image_task, frame, template, str(frame_output_dir)
-            )
-        ]
+        tasks = []
 
-        if frame.tts:
+        if "image" in asset_types:
+            image_task = AssetTask(
+                scene_id=frame.scene_id, frame_id=frame.id, asset_type="image"
+            )
+            tasks.append(
+                self._generate_image_asset(
+                    image_task, frame, template, str(frame_output_dir), use_cached
+                )
+            )
+
+        if "audio" in asset_types and frame.tts:
             audio_task = AssetTask(
                 scene_id=frame.scene_id, frame_id=frame.id, asset_type="audio"
             )
             tasks.append(
-                self._generate_audio_asset(audio_task, frame, str(frame_output_dir))
+                self._generate_audio_asset(
+                    audio_task, frame, str(frame_output_dir), use_cached
+                )
             )
+
+        if not tasks:
+            raise ValueError(f"No valid asset types requested: {asset_types}")
 
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        # Process results
-        image_result = results[0]
-        audio_result = results[1] if len(results) > 1 else None
-
+        # Process results based on which assets were generated
         failed_assets = []
+        image_result = None
+        audio_result = None
 
-        if isinstance(image_result, Exception):
-            image_task.status = "failed"
-            image_task.error = str(image_result)
-            failed_assets.append(image_task)
-            raise image_result
+        # Map results back to their tasks
+        result_idx = 0
+        if "image" in asset_types:
+            image_result = results[result_idx]
+            if isinstance(image_result, Exception):
+                image_task.status = "failed"
+                image_task.error = str(image_result)
+                failed_assets.append(image_task)
+                raise image_result
+            result_idx += 1
 
-        if audio_result and isinstance(audio_result, Exception):
-            audio_task.status = "failed"
-            audio_task.error = str(audio_result)
-            failed_assets.append(audio_task)
-            audio_result = None
+        if "audio" in asset_types and frame.tts:
+            audio_result = results[result_idx]
+            if isinstance(audio_result, Exception):
+                audio_task.status = "failed"
+                audio_task.error = str(audio_result)
+                failed_assets.append(audio_task)
+                audio_result = None
+            result_idx += 1
 
         # Extract dialogue from TTS config for frame result (may not exist for all templates)
         dialogue = None
@@ -329,6 +383,7 @@ class ParallelSceneGenerator:
         frame: Frame,
         template: ImageTemplate,
         output_path: str,
+        use_cached: bool = True,
     ) -> dict:
         """Generate a single image asset."""
         # Build context
@@ -347,7 +402,7 @@ class ParallelSceneGenerator:
         task.hash = cache_hash
         task.cached = is_cached
 
-        if is_cached:
+        if is_cached and use_cached:
             task.status = "cached"
             if self.callback:
                 self.callback.on_asset_cached(task)
@@ -369,7 +424,7 @@ class ParallelSceneGenerator:
                         template=template.parts,
                         context=context,
                         cache_directory=cache_dir,
-                        use_cached=True,
+                        use_cached=use_cached,
                     ),
                     timeout=timeout,
                 )
@@ -416,6 +471,7 @@ class ParallelSceneGenerator:
         task: AssetTask,
         frame: Frame,
         frame_output_path: str,
+        use_cached: bool = True,
     ) -> dict:
         """Generate a single audio asset using template system."""
         model = _get_tts_model_from_config(self.config)
@@ -451,7 +507,7 @@ class ParallelSceneGenerator:
         task.hash = cache_hash
         task.cached = is_cached
 
-        if is_cached:
+        if is_cached and use_cached:
             task.status = "cached"
             if self.callback:
                 self.callback.on_asset_cached(task)
@@ -474,7 +530,7 @@ class ParallelSceneGenerator:
                         frame_output_path,
                         cache_dir,
                         "tts",
-                        True,
+                        use_cached,
                     ),
                     timeout=timeout,
                 )

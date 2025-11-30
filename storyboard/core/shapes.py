@@ -35,12 +35,36 @@ TTSModel: TypeAlias = Literal[
     "gemini-2.5-flash-lite-preview-tts",
 ]
 TTSVoice: TypeAlias = Literal[
+    "Achernar",
+    "Achird",
+    "Algenib",
+    "Algieba",
+    "Alnilam",
     "Aoede",
-    "Kore",
-    "Fenrir",
+    "Autonoe",
+    "Callirrhoe",
+    "Charon",
+    "Despina",
     "Enceladus",
+    "Erinome",
+    "Fenrir",
+    "Gacrux",
+    "Iapetus",
+    "Kore",
+    "Laomedeia",
+    "Leda",
+    "Orus",
+    "Pulcherrima",
+    "Puck",
+    "Rasalgethi",
+    "Sadachbia",
+    "Sadaltager",
     "Schedar",
+    "Sulafat",
+    "Umbriel",
     "Vindemiatrix",
+    "Zephyr",
+    "Zubenelgenubi",
 ]
 
 
@@ -154,6 +178,21 @@ class TTSGenerationConfig(BaseModel):
     optimize: TTSOptimizeConfig = Field(default_factory=TTSOptimizeConfig)
 
 
+class CompositeMovieConfig(BaseModel):
+    no_audio_length: float = Field(default=5.0, gt=0)
+    output_filename: str = Field(default="movie.mp4")
+    resolution: str = Field(default="1920x1080", pattern=r"^\d+x\d+$")
+    fps: int = Field(default=30, ge=1, le=120)
+    video_codec: str = Field(default="libx264")
+    video_quality: int = Field(default=23, ge=0, le=51)
+    audio_codec: str = Field(default="aac")
+    audio_bitrate: str = Field(default="192k")
+
+
+class CompositeConfig(BaseModel):
+    movie: CompositeMovieConfig = Field(default_factory=CompositeMovieConfig)
+
+
 class RetryConfig(BaseModel):
     enabled: bool = True
     max_attempts: int = Field(default=3, ge=1)
@@ -183,6 +222,7 @@ class StoryboardConfig(BaseModel):
         )
     )
     generation: GenerationConfig = Field(default_factory=GenerationConfig)
+    composite: CompositeConfig = Field(default_factory=CompositeConfig)
 
 
 class SceneGraph(BaseModel):

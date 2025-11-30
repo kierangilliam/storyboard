@@ -33,7 +33,7 @@ def movie_command(args):
     metadata_path: Path = scene_folder / "metadata.json"
     if not metadata_path.exists():
         console.print(f"[red]Error: metadata.json not found in {scene_folder}[/red]")
-        console.print("Run 'storyboard run' first to generate scenes")
+        console.print("Run 'storyboard generate' first to generate scenes")
         return 1
 
     # Load config from SDL file if provided

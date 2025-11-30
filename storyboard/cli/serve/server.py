@@ -234,7 +234,7 @@ class StoryboardRequestHandler(BaseHTTPRequestHandler):
 
 def start_server(scene_folder: Path, port: int):
     """Start the HTTP server."""
-    server = HTTPServer(("localhost", port), StoryboardRequestHandler)
+    server = HTTPServer(("0.0.0.0", port), StoryboardRequestHandler)
     server.scene_folder = scene_folder
 
     server.serve_forever()

@@ -1,5 +1,7 @@
 # Storyboard
 
+![Image](./docs/assets/banner.png)
+
 A CLI tool for generating storyboards. Define characters, create reusable templates, and build interactive scenes through YAML configuration.
 
 See an example: [storyboard.kierangill.xyz](https://storyboard.kierangill.xyz/). Deployed using `storyboard serve`.

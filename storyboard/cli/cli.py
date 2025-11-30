@@ -43,8 +43,8 @@ def main():
         )
         run_parser.add_argument(
             "--output",
-            default="./output/scenes",
-            help="Output directory for generated scenes (default: ./output/scenes)",
+            default="./output",
+            help="Output directory for generated scenes (default: ./output)",
         )
         run_parser.add_argument(
             "--root-dir",

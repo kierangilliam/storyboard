@@ -24,7 +24,7 @@ async def main_async(args):
         root_dir = Path(args.root_dir)
         input_path = root_dir / args.input
         output_path = root_dir / args.output
-        base_path = root_dir
+        base_path = input_path.parent
     else:
         input_path = Path(args.input)
         output_path = Path(args.output)

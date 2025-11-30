@@ -207,7 +207,7 @@ function renderSceneViewer() {
                             <source src="/api/asset?path=${audioPath}" type="audio/wav">
                         </audio>
                         <div class="audio-player-container">
-                            <button class="play-pause-btn" onclick="togglePlayPause()" aria-label="Play/Pause">
+                            <button class="play-pause-btn" id="play-pause-btn" aria-label="Play/Pause">
                                 <svg id="play-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M8 5v14l11-7z"/>
                                 </svg>
@@ -216,7 +216,7 @@ function renderSceneViewer() {
                                 </svg>
                             </button>
                             <div class="audio-timeline">
-                                <div class="audio-progress" onclick="seekAudio(event)">
+                                <div class="audio-progress" id="audio-progress">
                                     <div class="audio-progress-bar" id="audio-progress-bar"></div>
                                 </div>
                                 <div class="audio-time">
@@ -271,10 +271,36 @@ function initAudioPlayer() {
   const audio = document.getElementById("audio-player");
   if (!audio) return;
 
-  // Update time display
+  // Add preload attribute to load enough data for seeking
+  audio.preload = "auto";
+
+  // Force load metadata
+  audio.load();
+
+  // Set up play/pause button
+  const playPauseBtn = document.getElementById("play-pause-btn");
+  if (playPauseBtn) {
+    playPauseBtn.addEventListener("click", togglePlayPause);
+  }
+
+  // Set up progress bar click to seek
+  const progressBar = document.getElementById("audio-progress");
+  if (progressBar) {
+    progressBar.addEventListener("click", seekAudio);
+  }
+
+  // Update time display when metadata loads
   audio.addEventListener("loadedmetadata", () => {
     const totalTime = document.getElementById("total-time");
     if (totalTime) {
+      totalTime.textContent = formatTime(audio.duration);
+    }
+  });
+
+  // Also update once data is loaded (backup)
+  audio.addEventListener("loadeddata", () => {
+    const totalTime = document.getElementById("total-time");
+    if (totalTime && audio.duration) {
       totalTime.textContent = formatTime(audio.duration);
     }
   });
@@ -325,12 +351,10 @@ function togglePlayPause() {
 
 function seekAudio(event) {
   const audio = document.getElementById("audio-player");
-  const progressBar = event.currentTarget;
+  if (!audio || !audio.duration) return;
 
-  if (!audio || !progressBar) return;
-
-  const rect = progressBar.getBoundingClientRect();
-  const pos = (event.clientX - rect.left) / rect.width;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const pos = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
   audio.currentTime = pos * audio.duration;
 }
 

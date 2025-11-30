@@ -127,7 +127,7 @@ class StoryboardRequestHandler(BaseHTTPRequestHandler):
             self._send_error_response(500, str(e))
 
     def _serve_asset(self, query: dict):
-        """Serve asset files (images/audio)."""
+        """Serve asset files (images/audio) with range request support."""
         try:
             path_param = query.get("path", [None])[0]
             if not path_param:
@@ -153,14 +153,51 @@ class StoryboardRequestHandler(BaseHTTPRequestHandler):
                 return
 
             mime_type: str = self._get_mime_type(asset_path)
+            file_size: int = asset_path.stat().st_size
 
-            self.send_response(200)
+            # Handle range requests for audio/video seeking
+            range_header = self.headers.get("Range")
+            if range_header:
+                self._serve_range_request(asset_path, mime_type, file_size, range_header)
+            else:
+                # Serve full file
+                self.send_response(200)
+                self.send_header("Content-Type", mime_type)
+                self.send_header("Content-Length", str(file_size))
+                self.send_header("Accept-Ranges", "bytes")
+                self.end_headers()
+
+                with open(asset_path, "rb") as f:
+                    self.wfile.write(f.read())
+
+        except Exception as e:
+            self._send_error_response(500, str(e))
+
+    def _serve_range_request(self, asset_path: Path, mime_type: str, file_size: int, range_header: str):
+        """Handle HTTP range request for partial content."""
+        try:
+            # Parse range header (e.g., "bytes=0-1023")
+            range_match = range_header.replace("bytes=", "").split("-")
+            start = int(range_match[0]) if range_match[0] else 0
+            end = int(range_match[1]) if len(range_match) > 1 and range_match[1] else file_size - 1
+
+            # Ensure valid range
+            if start >= file_size or end >= file_size or start > end:
+                self.send_error(416, "Requested Range Not Satisfiable")
+                return
+
+            content_length = end - start + 1
+
+            self.send_response(206)  # Partial Content
             self.send_header("Content-Type", mime_type)
-            self.send_header("Content-Length", str(asset_path.stat().st_size))
+            self.send_header("Content-Length", str(content_length))
+            self.send_header("Content-Range", f"bytes {start}-{end}/{file_size}")
+            self.send_header("Accept-Ranges", "bytes")
             self.end_headers()
 
             with open(asset_path, "rb") as f:
-                self.wfile.write(f.read())
+                f.seek(start)
+                self.wfile.write(f.read(content_length))
 
         except Exception as e:
             self._send_error_response(500, str(e))

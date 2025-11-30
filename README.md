@@ -4,6 +4,8 @@ A CLI tool for generating storyboards. Define characters, create reusable templa
 
 See an example: [storyboard.kierangill.xyz](https://storyboard.kierangill.xyz/). Deployed using `storyboard serve`.
 
+Or, view a composited video in [docs/assets/movie.mp4](./docs/assets/movie.mp4). Created using `storyboard composite movie`.
+
 ## Quickstart
 
 Install `storyboard` with `pip` or `uv`:

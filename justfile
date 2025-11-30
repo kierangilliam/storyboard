@@ -15,6 +15,7 @@ update-example:
 
 composite-example:
     uv run storyboard composite movie --scene-folder example/output --input example/content/main.yaml
+    mv example/output/movie.mp4 docs/assets/movie.mp4
 
 init-test:
     rm -rf test-project

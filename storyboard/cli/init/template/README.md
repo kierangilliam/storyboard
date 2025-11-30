@@ -1,5 +1,7 @@
 # Storyboard
 
+Generated using [Storyboard](https://github.com/kierangilliam/storyboard/).
+
 ## Generate the scenes
 
 ```

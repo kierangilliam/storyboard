@@ -4,6 +4,7 @@
 import argparse
 import sys
 
+import os
 from dotenv import load_dotenv
 
 from storyboard.cli.composite.composite_command import composite_command
@@ -13,11 +14,11 @@ from storyboard.cli.generate.generate_command import generate_command
 from storyboard.cli.serve.serve_command import serve_command
 from storyboard.cli.tts.tts_command import tts_command
 
-load_dotenv()
-
 
 def main():
     """Main CLI dispatcher."""
+    load_dotenv(dotenv_path=os.path.join(os.getcwd(), '.env'))
+
     try:
         parser = argparse.ArgumentParser(
             prog="storyboard", description="Storyboard scene generation CLI tool"

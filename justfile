@@ -22,6 +22,9 @@ init-test:
     uv run storyboard init --name test-project
     cp .env test-project/.env
 
+install-local:
+    uv tool install --editable .
+
 test:
     uv run pytest storyboard/tests/
 

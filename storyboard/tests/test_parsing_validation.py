@@ -314,7 +314,7 @@ def test_nonexistent_image_template_reference(tmp_path: Path):
     chars_file.write_text(chars_yaml)
 
     templates_yaml: str = """_test_template:
-  instructions: "Test [image ./missing.png]"
+  instructions: "Test {image ./missing.png}"
 """
     templates_file: Path = tmp_path / "templates.yaml"
     templates_file.write_text(templates_yaml)

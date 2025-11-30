@@ -80,7 +80,7 @@ config:
 """
 
     image_templates_yaml: str = """_test_template:
-  instructions: "Turn this person [image $character_reference] into a test style with backdrop {{$backdrop}}"
+  instructions: "Turn this person {{image $character_reference}} into a test style with backdrop {{$backdrop}}"
 """
 
     tts_templates_yaml: str = """_test_tts:

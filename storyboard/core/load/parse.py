@@ -77,13 +77,13 @@ def parse_tts_template(data: dict[str, Any]) -> TTSTemplate:
 
 
 def _expand_prompt_string(prompt_string: str) -> list[ImageTemplatePart]:
-    """Parse string with embedded [image ...] and {$variable} syntax."""
+    """Parse string with embedded {image ...} and {$variable} syntax."""
     prompt_string = prompt_string.strip()
 
     parts: list[ImageTemplatePart] = []
 
-    # Pattern matches [image ...] anywhere (not anchored)
-    image_pattern = r"\[image\s+(\$[\w]+|\.?[\w/.\-]+)\]"
+    # Pattern matches {image ...} anywhere (not anchored)
+    image_pattern = r"\{image\s+(\$[\w]+|\.?[\w/.\-]+)\}"
 
     # Split on image pattern, capturing the reference
     # Result: [text_before, image_ref, text_after, image_ref, ...]
@@ -111,7 +111,7 @@ def _expand_prompt_string(prompt_string: str) -> list[ImageTemplatePart]:
                         ImageTemplatePart(type="prompt", key=var_seg, content="")
                     )
         else:
-            # Odd indices: image reference (captured from [image ...])
+            # Odd indices: image reference (captured from {image ...})
             reference = segment.strip()
 
             if reference.startswith("$"):
@@ -129,7 +129,7 @@ def _expand_prompt_string(prompt_string: str) -> list[ImageTemplatePart]:
 
 
 def parse_image_template(data: dict[str, Any]) -> ImageTemplate:
-    """Parse image template with string-based instructions containing inline [image ...] and {$variable} syntax."""
+    """Parse image template with string-based instructions containing inline {image ...} and {$variable} syntax."""
     if "instructions" in data:
         parts: list[ImageTemplatePart] = _expand_prompt_string(data["instructions"])
     elif "prompt" in data:

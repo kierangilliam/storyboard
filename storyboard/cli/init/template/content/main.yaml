@@ -5,31 +5,48 @@ scenes: ./scenes.yaml
 
 config:
   output:
+    # Directory where final rendered output will be saved
     directory: ./output
+    # Directories for caching generated images/audio
+    # If there is a SHA match on a prompt+model, we will pull from the cache
+    # instead of regenerating.
     cache:
       images: .storyboard/generated/images
       audio: .storyboard/generated/audio
 
   image:
     default_model:
+      # Default image generation vendor
       vendor: gemini
+      # Default image generation model
       model: gemini-3-pro-image-preview
     optimize:
+      # Enable image optimization to reduce file size
       enabled: true
+      # Image quality level (0-100, higher is better quality)
       quality: 80
 
   tts:
     default_model:
+      # Default text-to-speech vendor
       vendor: gemini
+      # Default text-to-speech model
       model: gemini-2.5-flash-preview-tts
     optimize:
+      # Enable audio optimization to reduce file size
       enabled: false
+      # Audio quality level (1-10, higher is better quality; uses Opus)
       quality: 8
 
   generation:
+    # Maximum number of concurrent generation requests
     max_concurrent: 10
+    # Timeout in seconds for each generation request
     timeout_seconds: 120
     retry:
+      # Enable automatic retry on generation failures
       enabled: true
+      # Maximum number of retry attempts
       max_attempts: 3
+      # Delay in seconds between retry attempts
       delay_seconds: 2

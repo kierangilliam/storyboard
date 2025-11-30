@@ -83,7 +83,7 @@ def test_image_template_image_variable(test_image_file: Path):
 
 
 def test_image_template_mixed_parts(test_image_file: Path):
-    prompt_str: str = f"Turn this [image $ref] into {{$style}}"
+    prompt_str: str = f"Turn this {{image $ref}} into {{$style}}"
 
     parts: list[ImageTemplatePart] = _expand_prompt_string(prompt_str)
 
@@ -287,7 +287,7 @@ def test_reference_json_serialization(test_image_file: Path):
 
 
 def test_image_bracket_syntax_parsing():
-    prompt_str: str = "Some text [image ./path.png] more text"
+    prompt_str: str = "Some text {image ./path.png} more text"
 
     parts: list[ImageTemplatePart] = _expand_prompt_string(prompt_str)
 
@@ -299,7 +299,7 @@ def test_image_bracket_syntax_parsing():
 
 
 def test_variable_bracket_syntax_parsing():
-    prompt_str: str = "Text [image $variable] end"
+    prompt_str: str = "Text {image $variable} end"
 
     parts: list[ImageTemplatePart] = _expand_prompt_string(prompt_str)
 

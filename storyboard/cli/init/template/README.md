@@ -3,7 +3,7 @@
 ## Generate the scenes
 
 ```
-storyboard run
+storyboard generate
 ```
 
 ## View using a local server

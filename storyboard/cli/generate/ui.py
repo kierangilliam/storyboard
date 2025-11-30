@@ -9,7 +9,7 @@ from rich.live import Live
 from rich.panel import Panel
 from rich.text import Text
 
-from storyboard.cli.run.parallel_generator import AssetTask
+from storyboard.cli.generate.parallel_generator import AssetTask
 
 SHOW_FRAMES_STATUSES = {"in_progress", "failed"}
 

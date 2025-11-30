@@ -7,7 +7,7 @@ import sys
 import time
 from pathlib import Path
 
-from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
+from storyboard.cli.generate.parallel_generator import ParallelSceneGenerator
 from storyboard.cli.update.interactive import interactive_select
 from storyboard.cli.update.selector_parser import parse_update_selector
 from storyboard.core.load.load import load_scene_graph

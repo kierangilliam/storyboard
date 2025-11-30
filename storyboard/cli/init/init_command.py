@@ -61,13 +61,13 @@ def init_command(args):
             console.print("[green]✓[/green] API key saved to .env")
             console.print("\nNext steps:")
             console.print(f"  1. cd {project_name}")
-            console.print("  2. Run: storyboard run")
+            console.print("  2. Run: storyboard generate")
         else:
             console.print("\nNext steps:")
             console.print(f"  1. cd {project_name}")
             console.print("  2. cp .env.example .env")
             console.print("  3. Edit .env and add your GEMINI_API_KEY")
-            console.print("  4. Run: storyboard run")
+            console.print("  4. Run: storyboard generate")
 
         return 0
 

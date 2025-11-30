@@ -4,8 +4,8 @@ default:
 cu:
     claude --allowedTools mcp__container-use__environment_checkpoint,mcp__container-use__environment_create,mcp__container-use__environment_add_service,mcp__container-use__environment_file_delete,mcp__container-use__environment_file_list,mcp__container-use__environment_file_read,mcp__container-use__environment_file_write,mcp__container-use__environment_open,mcp__container-use__environment_run_cmd,mcp__container-use__environment_update
 
-run-example:
-    uv run storyboard run --root-dir example
+generate-example:
+    uv run storyboard generate --root-dir example
 
 serve-example:
     uv run storyboard serve --scene-folder example/output

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from storyboard.cli.composite.composite_command import composite_command
 from storyboard.cli.image.image_command import image_command
 from storyboard.cli.init.init_command import init_command
-from storyboard.cli.run.run_command import run_command
+from storyboard.cli.generate.generate_command import generate_command
 from storyboard.cli.serve.serve_command import serve_command
 from storyboard.cli.tts.tts_command import tts_command
 
@@ -34,21 +34,21 @@ def main():
             help="Project name (will be prompted if not provided)",
         )
 
-        # Run command
-        run_parser = subparsers.add_parser(
-            "run", help="Generate scene assets from storyboard main.yaml files"
+        # Generate command
+        generate_parser = subparsers.add_parser(
+            "generate", help="Generate scene assets from storyboard main.yaml files"
         )
-        run_parser.add_argument(
+        generate_parser.add_argument(
             "--input",
             help="Path to main.yaml file (default: content/main.yaml)",
             default="content/main.yaml",
         )
-        run_parser.add_argument(
+        generate_parser.add_argument(
             "--output",
             default="./output",
             help="Output directory for generated scenes (default: ./output)",
         )
-        run_parser.add_argument(
+        generate_parser.add_argument(
             "--root-dir",
             help="Root directory for resolving relative paths in SDL (default: parent directory of input file)",
         )
@@ -87,7 +87,9 @@ def main():
         )
 
         # Image command
-        image_parser = subparsers.add_parser("image", help="Generate images with Gemini")
+        image_parser = subparsers.add_parser(
+            "image", help="Generate images with Gemini"
+        )
         image_parser.add_argument(
             "--prompt",
             required=True,
@@ -130,8 +132,8 @@ def main():
         )
         serve_parser.add_argument(
             "--scene-folder",
-            required=True,
-            help="Path to output directory containing metadata.json",
+            default="./output",
+            help="Path to output directory containing metadata.json (default: ./output)",
         )
         serve_parser.add_argument(
             "--port",
@@ -209,8 +211,8 @@ def main():
         # Dispatch to appropriate command
         if args.command == "init":
             return init_command(args)
-        elif args.command == "run":
-            return run_command(args)
+        elif args.command == "generate":
+            return generate_command(args)
         elif args.command == "tts":
             return tts_command(args)
         elif args.command == "image":

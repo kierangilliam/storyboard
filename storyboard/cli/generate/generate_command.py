@@ -8,9 +8,9 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from storyboard.cli.run.logging_manager import StructuredLogger
-from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
-from storyboard.cli.run.ui import TerminalUI
+from storyboard.cli.generate.logging_manager import StructuredLogger
+from storyboard.cli.generate.parallel_generator import ParallelSceneGenerator
+from storyboard.cli.generate.ui import TerminalUI
 from storyboard.core.load.load import load_scene_graph
 from storyboard.core.load.validate import validate_scene_graph
 
@@ -171,6 +171,6 @@ async def main_async(args):
         print("  All scenes generated successfully ✓")
 
 
-def run_command(args):
+def generate_command(args):
     """Generate scene assets from the main SDL file."""
     asyncio.run(main_async(args))

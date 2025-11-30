@@ -2,9 +2,9 @@
 
 import pytest
 
+from storyboard.cli.generate.parallel_generator import ParallelSceneGenerator
 from storyboard.cli.update.selector_parser import parse_update_selector
 from storyboard.core.load.load import load_scene_graph
-from storyboard.core.shapes import Frame, Scene, SceneGraph
 
 
 @pytest.fixture
@@ -159,7 +159,9 @@ class TestSelectorParsing:
         with pytest.raises(ValueError, match="Invalid selector format"):
             parse_update_selector("1.2.3.4", scene_graph)
 
-    def test_parse_selector_invalid_format_too_few_parts(self, multi_scene_fixture_path):
+    def test_parse_selector_invalid_format_too_few_parts(
+        self, multi_scene_fixture_path
+    ):
         """Test invalid format with too few parts."""
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent
@@ -206,7 +208,6 @@ class TestSelectiveGeneration:
         self, multi_scene_fixture_path, mock_gemini_client, tmp_path
     ):
         """Test generating both assets."""
-        from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
 
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent
@@ -232,7 +233,6 @@ class TestSelectiveGeneration:
         self, multi_scene_fixture_path, mock_gemini_client, tmp_path
     ):
         """Test generating only image asset."""
-        from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
 
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent
@@ -258,7 +258,6 @@ class TestSelectiveGeneration:
         self, multi_scene_fixture_path, mock_gemini_client, tmp_path
     ):
         """Test generating only audio asset."""
-        from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
 
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent
@@ -284,7 +283,6 @@ class TestSelectiveGeneration:
         self, multi_scene_fixture_path, tmp_path
     ):
         """Test error when scene doesn't exist."""
-        from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
 
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent
@@ -303,7 +301,6 @@ class TestSelectiveGeneration:
         self, multi_scene_fixture_path, tmp_path
     ):
         """Test error when frame doesn't exist."""
-        from storyboard.cli.run.parallel_generator import ParallelSceneGenerator
 
         scene_graph = load_scene_graph(
             multi_scene_fixture_path, multi_scene_fixture_path.parent

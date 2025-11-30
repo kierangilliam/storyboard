@@ -1,6 +1,6 @@
 [project]
 name = "storyboard-cli"
-version = "0.3.1"
+version = "0.3.2"
 description = "Storyboard scene generation CLI tool"
 requires-python = ">=3.11"
 dependencies = [

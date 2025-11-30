@@ -97,183 +97,135 @@ def _get_audio_duration(audio_path: Path) -> float:
     return float(result.stdout.strip())
 
 
+def _create_segment_with_audio(
+    entry: FrameEntry,
+    output_path: Path,
+    resolution: str,
+    config: CompositeMovieConfig,
+) -> None:
+    """Create a complete segment with both video and audio tracks."""
+    # Parse resolution
+    width, height = map(int, resolution.split("x"))
+
+    # Build ffmpeg command based on whether frame has audio
+    if entry.audio_path is not None:
+        # Frame has audio - create video from image and use actual audio
+        cmd: list[str] = [
+            "ffmpeg",
+            "-y",
+            "-loop", "1",
+            "-framerate", str(config.fps),
+            "-i", str(entry.image_path),
+            "-i", str(entry.audio_path),
+            "-vf", f"scale={width}:{height}:force_original_aspect_ratio=decrease,pad={width}:{height}:(ow-iw)/2:(oh-ih)/2",
+            "-c:v", config.video_codec,
+            "-crf", str(config.video_quality),
+            "-pix_fmt", "yuv420p",
+            "-c:a", config.audio_codec,
+            "-b:a", config.audio_bitrate,
+            "-shortest",  # Stop when shortest input ends (audio)
+            str(output_path),
+        ]
+    else:
+        # Frame has no audio - create video and add silent audio
+        cmd: list[str] = [
+            "ffmpeg",
+            "-y",
+            "-loop", "1",
+            "-framerate", str(config.fps),
+            "-t", str(entry.duration),
+            "-i", str(entry.image_path),
+            "-f", "lavfi",
+            "-t", str(entry.duration),
+            "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
+            "-vf", f"scale={width}:{height}:force_original_aspect_ratio=decrease,pad={width}:{height}:(ow-iw)/2:(oh-ih)/2",
+            "-c:v", config.video_codec,
+            "-crf", str(config.video_quality),
+            "-pix_fmt", "yuv420p",
+            "-c:a", config.audio_codec,
+            "-b:a", config.audio_bitrate,
+            "-shortest",
+            str(output_path),
+        ]
+
+    _safe_subprocess_run(
+        cmd, error_context=f"Failed to create segment for {entry.image_path}"
+    )
+
+
 def _create_movie_with_ffmpeg(
     frame_entries: list[FrameEntry],
     output_path: Path,
     resolution: str,
     config: CompositeMovieConfig,
 ) -> None:
-    """Create movie using ffmpeg concat demuxer and filter_complex for audio."""
+    """Create movie by building complete video+audio segments then concatenating."""
     # Create temporary directory for intermediate files
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path: Path = Path(tmpdir)
 
-        # Create individual video-only segments for each frame
-        video_segment_files: list[Path] = []
+        # Create individual segments with both video and audio
+        segment_files: list[Path] = []
 
         for i, entry in enumerate(frame_entries):
             # Verify image exists
             if not entry.image_path.exists():
                 raise FileNotFoundError(f"Image not found: {entry.image_path}")
 
-            segment_path: Path = tmpdir_path / f"video_segment_{i:04d}.mp4"
+            segment_path: Path = tmpdir_path / f"segment_{i:04d}.mp4"
 
-            # Create video-only segment from image
-            _create_video_only_segment(
-                image_path=entry.image_path,
-                duration=entry.duration,
+            # Create segment with both video and audio
+            _create_segment_with_audio(
+                entry=entry,
                 output_path=segment_path,
                 resolution=resolution,
                 config=config,
             )
 
-            video_segment_files.append(segment_path)
+            segment_files.append(segment_path)
 
-        # Concatenate video segments
-        video_only_path: Path = tmpdir_path / "video_only.mp4"
-        _concatenate_segments(video_segment_files, video_only_path)
-
-        # Create complete audio track
-        audio_path: Path = tmpdir_path / "audio.aac"
-        _create_audio_track(frame_entries, audio_path, config)
-
-        # Mux video and audio together
-        _mux_video_and_audio(video_only_path, audio_path, output_path)
+        # Concatenate all segments
+        _concatenate_segments(segment_files, output_path, config)
 
 
-def _create_video_only_segment(
-    image_path: Path,
-    duration: float,
-    output_path: Path,
-    resolution: str,
-    config: CompositeMovieConfig,
+def _concatenate_segments(
+    segment_files: list[Path], output_path: Path, config: CompositeMovieConfig
 ) -> None:
-    """Create a video-only segment from an image."""
-    # Parse resolution
-    width, height = map(int, resolution.split("x"))
+    """Concatenate segments using concat filter for proper audio/video sync."""
+    # Build filter_complex using concat filter (not concat demuxer)
+    # This ensures proper PTS handling and prevents audio drift
+    n: int = len(segment_files)
 
-    # Build ffmpeg command for video only
+    # Build input arguments
+    input_args: list[str] = []
+    for segment in segment_files:
+        input_args.extend(["-i", str(segment)])
+
+    # Build concat filter string: [0:v][0:a][1:v][1:a]...concat=n=N:v=1:a=1[outv][outa]
+    filter_parts: list[str] = []
+    for i in range(n):
+        filter_parts.append(f"[{i}:v][{i}:a]")
+    filter_string: str = f"{''.join(filter_parts)}concat=n={n}:v=1:a=1[outv][outa]"
+
+    # Concatenate using concat filter
     cmd: list[str] = [
         "ffmpeg",
-        "-y",  # Overwrite output
-        "-loop",
-        "1",
-        "-framerate",
-        str(config.fps),
-        "-t",
-        str(duration),
-        "-i",
-        str(image_path),
-        "-vf",
-        f"scale={width}:{height}:force_original_aspect_ratio=decrease,pad={width}:{height}:(ow-iw)/2:(oh-ih)/2",
+        "-y",
+        *input_args,
+        "-filter_complex",
+        filter_string,
+        "-map",
+        "[outv]",
+        "-map",
+        "[outa]",
         "-c:v",
         config.video_codec,
         "-crf",
         str(config.video_quality),
+        "-preset",
+        "medium",
         "-pix_fmt",
         "yuv420p",
-        "-an",  # No audio
-        str(output_path),
-    ]
-
-    # Run ffmpeg
-    _safe_subprocess_run(
-        cmd, error_context=f"Failed to create video segment for {image_path}"
-    )
-
-
-def _create_audio_track(
-    frame_entries: list[FrameEntry], output_path: Path, config: CompositeMovieConfig
-) -> None:
-    """Create a single continuous audio track from all frames."""
-    # Build filter_complex command to concatenate audio with delays
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmpdir_path: Path = Path(tmpdir)
-
-        # Create individual audio segments
-        audio_segments: list[Path] = []
-
-        for i, entry in enumerate(frame_entries):
-            segment_path: Path = tmpdir_path / f"audio_{i:04d}.wav"
-
-            if entry.audio_path is not None:
-                # Use actual audio file - keep as WAV to avoid AAC padding
-                cmd: list[str] = [
-                    "ffmpeg",
-                    "-y",
-                    "-i",
-                    str(entry.audio_path),
-                    "-t",
-                    str(entry.duration),
-                    "-c:a",
-                    "pcm_s16le",
-                    "-ar",
-                    "48000",
-                    str(segment_path),
-                ]
-            else:
-                # Create silent audio segment with the configured duration
-                cmd = [
-                    "ffmpeg",
-                    "-y",
-                    "-f",
-                    "lavfi",
-                    "-t",
-                    str(entry.duration),
-                    "-i",
-                    "anullsrc=channel_layout=stereo:sample_rate=48000",
-                    "-c:a",
-                    "pcm_s16le",
-                    str(segment_path),
-                ]
-
-            _safe_subprocess_run(cmd, error_context=f"Failed to create audio segment {i}")
-            audio_segments.append(segment_path)
-
-        # Concatenate all audio segments (still WAV)
-        wav_output: Path = tmpdir_path / "audio.wav"
-        _concatenate_audio_segments(audio_segments, wav_output)
-
-        # Convert final audio to AAC
-        _convert_audio_to_aac(wav_output, output_path, config)
-
-
-def _concatenate_audio_segments(segment_files: list[Path], output_path: Path) -> None:
-    """Concatenate audio segments."""
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
-        concat_file: Path = Path(f.name)
-        for segment in segment_files:
-            f.write(f"file '{segment.absolute()}'\n")
-
-    try:
-        cmd: list[str] = [
-            "ffmpeg",
-            "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(concat_file),
-            "-c",
-            "copy",
-            str(output_path),
-        ]
-
-        _safe_subprocess_run(cmd, error_context="Failed to concatenate audio segments")
-    finally:
-        concat_file.unlink()
-
-
-def _convert_audio_to_aac(
-    input_path: Path, output_path: Path, config: CompositeMovieConfig
-) -> None:
-    """Convert WAV audio to AAC."""
-    cmd: list[str] = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        str(input_path),
         "-c:a",
         config.audio_codec,
         "-b:a",
@@ -281,57 +233,7 @@ def _convert_audio_to_aac(
         str(output_path),
     ]
 
-    _safe_subprocess_run(cmd, error_context="Failed to convert audio to AAC")
-
-
-def _mux_video_and_audio(
-    video_path: Path, audio_path: Path, output_path: Path
-) -> None:
-    """Mux video and audio streams together."""
-    cmd: list[str] = [
-        "ffmpeg",
-        "-y",
-        "-i",
-        str(video_path),
-        "-i",
-        str(audio_path),
-        "-c:v",
-        "copy",
-        "-c:a",
-        "copy",
-        str(output_path),
-    ]
-
-    _safe_subprocess_run(cmd, error_context="Failed to mux video and audio")
-
-
-def _concatenate_segments(segment_files: list[Path], output_path: Path) -> None:
-    """Concatenate video segments using ffmpeg concat demuxer."""
-    # Create concat list file
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as f:
-        concat_file: Path = Path(f.name)
-        for segment in segment_files:
-            f.write(f"file '{segment.absolute()}'\n")
-
-    try:
-        # Concatenate using concat demuxer
-        cmd: list[str] = [
-            "ffmpeg",
-            "-y",
-            "-f",
-            "concat",
-            "-safe",
-            "0",
-            "-i",
-            str(concat_file),
-            "-c",
-            "copy",  # Stream copy - no re-encoding
-            str(output_path),
-        ]
-
-        _safe_subprocess_run(cmd, error_context="Failed to concatenate video segments")
-    finally:
-        concat_file.unlink()  # Clean up concat file
+    _safe_subprocess_run(cmd, error_context="Failed to concatenate video segments")
 
 
 def _safe_subprocess_run(cmd: list[str], error_context: str) -> subprocess.CompletedProcess:

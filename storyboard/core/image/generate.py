@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+import os
 from pathlib import Path
 from typing import Literal
 
@@ -176,7 +177,8 @@ class ImageGen:
 
         print(f"Generating image (Cache miss): {output_file}")
 
-        client = genai.Client()
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        client = genai.Client(api_key=api_key)
         config = types.GenerateContentConfig(
             response_modalities=["IMAGE"],
         )

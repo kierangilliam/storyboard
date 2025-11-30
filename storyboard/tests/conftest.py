@@ -36,9 +36,9 @@ def mock_gemini_client(monkeypatch):
         side_effect=mock_generate_content
     )
     monkeypatch.setattr(
-        "storyboard.core.image.generate.genai.Client", lambda: mock_client
+        "storyboard.core.image.generate.genai.Client", lambda **kwargs: mock_client
     )
-    monkeypatch.setattr("storyboard.core.tts.generate.genai.Client", lambda: mock_client)
+    monkeypatch.setattr("storyboard.core.tts.generate.genai.Client", lambda **kwargs: mock_client)
 
     return mock_client
 

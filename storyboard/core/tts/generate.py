@@ -1,5 +1,6 @@
 import asyncio
 import hashlib
+import os
 import shutil
 import wave
 from pathlib import Path
@@ -163,7 +164,8 @@ class TTSGen:
                 duration_seconds=duration,
             )
 
-        client = genai.Client()
+        api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+        client = genai.Client(api_key=api_key)
 
         response = await client.aio.models.generate_content(
             model=model.model_variant,

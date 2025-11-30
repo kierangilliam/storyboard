@@ -30,8 +30,8 @@ def test_load_main_content():
     assert len(scene_graph.characters) > 0
 
     character_ids: list[str] = [char.id for char in scene_graph.characters]
-    assert "nick" in character_ids
-    assert "chris" in character_ids
+    assert "bill" in character_ids
+    assert "burt" in character_ids
 
     assert len(scene_graph.scenes) > 0
 

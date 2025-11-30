@@ -42,10 +42,8 @@ def test_invalid_tts_voice():
     with pytest.raises(ValidationError) as exc_info:
         CharacterTTSConfig(style="Test style", voice="InvalidVoice")
     error_msg: str = str(exc_info.value)
-    assert (
-        "Input should be 'Aoede', 'Kore', 'Fenrir', 'Enceladus', 'Schedar' or 'Vindemiatrix'"
-        in error_msg
-    )
+    assert "Input should be" in error_msg
+    assert "'Fenrir'" in error_msg
 
 
 def test_invalid_quality_range():

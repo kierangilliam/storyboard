@@ -1,0 +1,38 @@
+{
+  "scene_id": "tutorial",
+  "scene_name": "Tutorial",
+  "frames": [
+    {
+      "frame_id": "intro",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/tutorial/intro/image.webp",
+          "hash": "b90fa553e5d613e6",
+          "format": "webp"
+        },
+        "audio": {
+          "path": "output/tutorial/intro/tts.wav",
+          "hash": "bb76f68723c04fe4",
+          "format": "wav"
+        }
+      },
+      "template_used": "oblivion_dialogue"
+    },
+    {
+      "frame_id": "inventory",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/tutorial/inventory/image.webp",
+          "hash": "db945883e6f2147c",
+          "format": "webp"
+        },
+        "audio": null
+      },
+      "template_used": "oblivion_inventory"
+    }
+  ]
+}

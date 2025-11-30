@@ -1,0 +1,105 @@
+_morning_after:
+  name: The Morning After
+  frames:
+    _wakeup:
+      image:
+        template: _oblivion_dialogue
+        $backdrop: A dimly lit bedroom in a fortified safehouse, empty skooma bottles scattered across a nightstand and floor
+        $character_reference: "@characters._burt.reference_photo"
+        $character_name: "@characters._burt.name"
+        $dialogue: "@parent.tts.content"
+      tts:
+        template: _dialogue
+        $character: "@characters._burt"
+        $content: |
+          Bill. Bill, you're finally awake. That was some crazy night. We haven't done that much skooma since the Lumon holiday party.
+          Back when I was still working O&D, before the outbreak. Before we knew what The Board was really doing in the testing wing.
+          But we can't stay here enjoying ourselves. I've been monitoring the radio, more infected spotted near the perimeter.
+          And Bill... I found something in those documents. Something about the severance procedure and the fungus.
+          We need to move. There's a Lumon facility outside town. If we're going to understand what happened, we need to go there.
+    _inventory:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._bill.reference_photo"
+        $inventory_items: empty skooma bottles, whiskey flask, Lumon O&D badge, crumpled photograph, hunting knife
+        $background: Inside a messy bedroom with survival supplies and empty bottles
+        $extra_instructions: The character looks disheveled and hungover, sitting on the edge of a bed. A Lumon Industries badge reading "O&D Division - B. Goodman" is visible. A faded photograph shows two people together in happier times.
+
+_the_briefing:
+  name: The Briefing
+  frames:
+    _explanation:
+      image:
+        template: _oblivion_dialogue
+        $backdrop: A fortified safehouse in Lincoln, Massachusetts with boarded windows, maps, and scattered documents
+        $character_reference: "@characters._burt.reference_photo"
+        $character_name: "@characters._burt.name"
+        $dialogue: "@parent.tts.content"
+      tts:
+        template: _dialogue
+        $character: "@characters._burt"
+        $content: |
+          Listen carefully, Bill. I've been going through the Lumon documents we salvaged. The severance technology...
+          it wasn't just for corporate productivity. I worked in Optics and Design, the O&D division. We thought we were
+          making art, working with those strange goats. But there was another floor. Project Cordyceps. The Board approved
+          using severed subjects as test cases. They thought splitting consciousness could create a firewall against the fungal infection.
+          Contain it in the innie, keep the outie clean. It failed. The fungus learned to bridge the gap. God, Bill. Lumon didn't just know the outbreak was coming. They may have caused it.
+    _mission_prep:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._bill.reference_photo"
+        $inventory_items: hunting rifle, gas mask, Lumon O&D keycard, first aid kit, ammunition, flashlight
+        $background: Inside a fortified safehouse with survival gear and Lumon documents spread on a table
+        $extra_instructions: The character is checking weapons and gear, preparing for a mission. A Lumon keycard with "O&D Access - B. Goodman" is prominently displayed among the equipment.
+
+_severed_floor:
+  name: The Severed Floor
+  frames:
+    _discovery:
+      image:
+        template: _oblivion_dialogue
+        $backdrop: Sterile white Lumon hallways with colored department strips, abandoned desks, and scattered papers
+        $character_reference: "@characters._bill.reference_photo"
+        $character_name: "@characters._bill.name"
+        $dialogue: "@parent.tts.content"
+      tts:
+        template: _dialogue
+        $character: "@characters._bill"
+        $content: |
+          Jesus, Burt. What the hell is this place? These hallways... they go on forever. Look at this door - it says "Break Room."
+          And this handbook... "MDR Refiner's Manual - Macrodata Refinement Protocol." What kind of data were they refining?
+          Wait. Is that a waffle iron? Who the hell brings a waffle iron to a biotech lab? There's an engraving... "Reward Achievement."
+          Burt, your face just went white. You've seen this before, haven't you? Where are those goats you mentioned? This whole place feels wrong.
+    _strange_findings:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._bill.reference_photo"
+        $inventory_items: hunting rifle, gas mask, Overtime Contingency document, MDR handbook, waffle iron, break room keycard
+        $background: Inside sterile Lumon Industries corridors with color-coded department markers and abandoned workstations
+        $extra_instructions: The character is examining bizarre corporate artifacts. A waffle iron with "Reward Achievement - Lumon Industries" engraved on it sits among the items. The environment shows signs of hasty abandonment with papers scattered and computers still running.
+
+_the_truth:
+  name: The Truth
+  frames:
+    _research_log:
+      image:
+        template: _oblivion_diary
+        $diary_entry: "@parent.tts.content"
+      tts:
+        template: _dialogue
+        $character: "@characters._lumon_guard"
+        $content: |
+          Confidential Research Log 47-B. Dr. Helena Eagan, Lumon Biotech Division. The Board has given final approval.
+          Kier's vision was control through severance - but we've found a greater purpose. Project Cordyceps will revolutionize
+          pandemic response. We're using severed test subjects, volunteers from MDR and O&D. The procedure isolates their innie consciousness,
+          then we introduce controlled Cordyceps exposure. Theory: the severance barrier contains infection to the innie neural pathways.
+          The outie remains clean, immune. Early trials showed promise. But Subject 23 is exhibiting concerning symptoms. The fungus is...
+          adapting. It's learning the severance pathways, using them as highways through the brain rather than barriers. God forgive us.
+          We didn't create a firewall. We built a superhighway. Evacuation ordered. They're sealing this facility. The goats are already gone.
+    _final_evidence:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._bill.reference_photo"
+        $inventory_items: hunting rifle, research documents, Cordyceps samples, Lumon severance chip, goat figurine, Eagan family portrait
+        $background: Inside Dr. Eagan's abandoned laboratory with Lumon branding, severed testing equipment, and emergency lockdown warnings
+        $extra_instructions: The character is surrounded by damning evidence. A small goat figurine from O&D sits next to a deactivated severance chip. An official Eagan family portrait hangs crooked on the wall. Biohazard warnings flash on computer screens showing Cordyceps growth patterns mapped to neural pathways.

@@ -1,0 +1,38 @@
+{
+  "scene_id": "the_truth",
+  "scene_name": "The Truth",
+  "frames": [
+    {
+      "frame_id": "research_log",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/the_truth/research_log/image.webp",
+          "hash": "33459d0d64b55a83",
+          "format": "webp"
+        },
+        "audio": {
+          "path": "output/the_truth/research_log/tts.wav",
+          "hash": "b30821efaf095e9f",
+          "format": "wav"
+        }
+      },
+      "template_used": "oblivion_diary"
+    },
+    {
+      "frame_id": "final_evidence",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/the_truth/final_evidence/image.webp",
+          "hash": "47a9a000d0b339c7",
+          "format": "webp"
+        },
+        "audio": null
+      },
+      "template_used": "oblivion_inventory"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "scene_id": "morning_after",
+  "scene_name": "The Morning After",
+  "frames": [
+    {
+      "frame_id": "wakeup",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/morning_after/wakeup/image.webp",
+          "hash": "61dddd8d1755ae32",
+          "format": "webp"
+        },
+        "audio": {
+          "path": "output/morning_after/wakeup/tts.wav",
+          "hash": "298fa08d6f9c04f9",
+          "format": "wav"
+        }
+      },
+      "template_used": "oblivion_dialogue"
+    },
+    {
+      "frame_id": "inventory",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/morning_after/inventory/image.webp",
+          "hash": "238f423a6eca99a9",
+          "format": "webp"
+        },
+        "audio": null
+      },
+      "template_used": "oblivion_inventory"
+    }
+  ]
+}

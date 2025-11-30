@@ -1,0 +1,20 @@
+_bill:
+  name: Bill
+  reference_photo: ./assets/nick.webp
+  tts:
+    style: Narrate in a gruff, practical, survivalist tone - wary but competent
+    voice: Fenrir
+
+_burt:
+  name: Burt
+  reference_photo: ./assets/chris.webp
+  tts:
+    style: Narrate in a distinctive Christopher Walken delivery - measured, slightly peculiar cadence with unexpected pauses
+    voice: Enceladus
+
+_lumon_guard:
+  name: Former Lumon Employee
+  reference_photo: ./assets/kieran.jpg
+  tts:
+    style: Narrate in a corporate, clinical, conflicted tone
+    voice: Enceladus

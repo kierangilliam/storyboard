@@ -1,0 +1,38 @@
+{
+  "scene_id": "severed_floor",
+  "scene_name": "The Severed Floor",
+  "frames": [
+    {
+      "frame_id": "discovery",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/severed_floor/discovery/image.webp",
+          "hash": "48deede1caa6d9c7",
+          "format": "webp"
+        },
+        "audio": {
+          "path": "output/severed_floor/discovery/tts.wav",
+          "hash": "781a2dcf677c892f",
+          "format": "wav"
+        }
+      },
+      "template_used": "oblivion_dialogue"
+    },
+    {
+      "frame_id": "strange_findings",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/severed_floor/strange_findings/image.webp",
+          "hash": "f36c4e8cb31cd08c",
+          "format": "webp"
+        },
+        "audio": null
+      },
+      "template_used": "oblivion_inventory"
+    }
+  ]
+}

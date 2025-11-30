@@ -1,0 +1,38 @@
+{
+  "scene_id": "the_briefing",
+  "scene_name": "The Briefing",
+  "frames": [
+    {
+      "frame_id": "explanation",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/the_briefing/explanation/image.webp",
+          "hash": "f55c7fd0bb6b788f",
+          "format": "webp"
+        },
+        "audio": {
+          "path": "output/the_briefing/explanation/tts.wav",
+          "hash": "3c17c7950ffad85a",
+          "format": "wav"
+        }
+      },
+      "template_used": "oblivion_dialogue"
+    },
+    {
+      "frame_id": "mission_prep",
+      "speaker": null,
+      "dialogue": null,
+      "assets": {
+        "image": {
+          "path": "output/the_briefing/mission_prep/image.webp",
+          "hash": "349c9a990496579e",
+          "format": "webp"
+        },
+        "audio": null
+      },
+      "template_used": "oblivion_inventory"
+    }
+  ]
+}

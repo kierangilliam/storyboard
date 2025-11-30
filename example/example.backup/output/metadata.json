@@ -1,0 +1,34 @@
+{
+  "scenes": [
+    {
+      "scene_id": "morning_after",
+      "scene_name": "The Morning After",
+      "frame_count": 2,
+      "metadata_path": "morning_after/metadata.json"
+    },
+    {
+      "scene_id": "the_briefing",
+      "scene_name": "The Briefing",
+      "frame_count": 2,
+      "metadata_path": "the_briefing/metadata.json"
+    },
+    {
+      "scene_id": "severed_floor",
+      "scene_name": "The Severed Floor",
+      "frame_count": 2,
+      "metadata_path": "severed_floor/metadata.json"
+    },
+    {
+      "scene_id": "the_truth",
+      "scene_name": "The Truth",
+      "frame_count": 2,
+      "metadata_path": "the_truth/metadata.json"
+    }
+  ],
+  "generation_metadata": {
+    "generated_at": "2025-11-30T17:02:02.067027",
+    "sdl_file": "example/content/main.yaml",
+    "total_scenes": 4,
+    "failed_scenes": []
+  }
+}

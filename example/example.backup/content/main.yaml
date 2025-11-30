@@ -1,0 +1,35 @@
+characters: ./characters.yaml
+image_templates: ./image_templates.yaml
+tts_templates: ./tts_templates.yaml
+scenes: ./scenes.yaml
+
+config:
+  output:
+    directory: ./output
+    cache:
+      images: .storyboard/generated/images
+      audio: .storyboard/generated/audio
+
+  image:
+    default_model:
+      vendor: gemini
+      model: gemini-3-pro-image-preview
+    optimize:
+      enabled: true
+      quality: 80
+
+  tts:
+    default_model:
+      vendor: gemini
+      model: gemini-2.5-flash-preview-tts
+    optimize:
+      enabled: false
+      quality: 8
+
+  generation:
+    max_concurrent: 10
+    timeout_seconds: 120
+    retry:
+      enabled: true
+      max_attempts: 3
+      delay_seconds: 2

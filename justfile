@@ -20,6 +20,7 @@ build:
     uv run python -m build
 
 publish:
+    just build
     uv run twine upload dist/*
 
 publish-test:

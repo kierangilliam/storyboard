@@ -1,0 +1,37 @@
+_tutorial:
+  name: Tutorial
+  frames:
+    _intro:
+      image:
+        template: _oblivion_dialogue
+        $backdrop: A medieval tavern
+        $character_reference: "@characters._chris.reference_photo"
+        $character_name: "@characters._chris.name"
+        $dialogue: "@parent.tts.content"
+      tts:
+        template: _dialogue
+        $character: "@characters._chris"
+        $content: |
+          Hello traveler! This image was generated using the "_oblivion_dialogue" template.
+          That template takes 4 arguments: backdrop, character_reference, character_name, and dialogue.
+          Notice how each is lead with a dollar sign. That indicates it is a variable.
+          Also notice the at sign. That indicates that we are referencing an object, like a character.
+          This let's us create reusable characters.
+    _inventory:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._nick.reference_photo"
+        $inventory_items: empty skooma bottle
+        $background: Inside a medieval tavern
+        $extra_instructions: The character is in a bed, with Skooma bottles on his bedside table.
+
+_campsite:
+  name: Abandoned Campsite
+  frames:
+    _inventory:
+      image:
+        template: _oblivion_inventory
+        $character_reference: "@characters._nick.reference_photo"
+        $inventory_items: empty skooma bottle, diary entry, heavy armor
+        $background: At an abandoned campsite in the forest
+        $extra_instructions: The character is wearing heavy weight chest armor that has been dented from battle

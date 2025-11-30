@@ -13,3 +13,5 @@ build/
 .DS_Store
 .storyboard/generated
 .storyboard/logs/
+dist/
+test-project/

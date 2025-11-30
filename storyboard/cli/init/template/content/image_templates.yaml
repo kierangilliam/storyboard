@@ -1,0 +1,12 @@
+_oblivion_dialogue:
+  instructions: |
+    Turn this person [image $character_reference] into the style of Oblivion
+    and create a dialogue screen like in this picture [image ./assets/oblivion_dialogue.webp]
+    Replace the name 'Glenroy' with '{$character_name}'.
+    The backdrop should be: {$backdrop}.
+    The dialogue should be replaced with '{$dialogue}'
+
+_oblivion_inventory:
+  instructions: |
+    Turn the person in this photo [image $character_reference] into the style of an Oblivion character and create an inventory screen like in this picture: [image ./assets/oblivion_inventory.webp]
+    The character should be equipped with the following items: {$inventory_items}. The background setting should be: {$background}. In the inventory section on the left side of the screen, display this list of items: {$inventory_items}. {$extra_instructions}

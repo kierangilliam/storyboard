@@ -1,0 +1,13 @@
+_nick:
+  name: Nick
+  reference_photo: ./assets/nick.webp
+  tts:
+    style: Narrate in a frantic tone
+    voice: Fenrir
+
+_chris:
+  name: Chris
+  reference_photo: ./assets/chris.webp
+  tts:
+    style: Narrate in a powerful, regal, deep, commanding, and dramatic tone
+    voice: Enceladus

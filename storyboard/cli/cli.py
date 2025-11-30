@@ -7,6 +7,7 @@ import sys
 from dotenv import load_dotenv
 
 from storyboard.cli.image.image_command import image_command
+from storyboard.cli.init.init_command import init_command
 from storyboard.cli.run.run_command import run_command
 from storyboard.cli.tts.tts_command import tts_command
 
@@ -21,14 +22,23 @@ def main():
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
+    # Init command
+    init_parser = subparsers.add_parser(
+        "init", help="Initialize a new storyboard project"
+    )
+    init_parser.add_argument(
+        "--name",
+        help="Project name (will be prompted if not provided)",
+    )
+
     # Run command
     run_parser = subparsers.add_parser(
-        "run", help="Generate scene assets from SDL files"
+        "run", help="Generate scene assets from storyboard main.yaml files"
     )
     run_parser.add_argument(
         "--input",
-        required=True,
-        help="Path to SDL file",
+        help="Path to main.yaml file (default: content/main.yaml)",
+        default="content/main.yaml",
     )
     run_parser.add_argument(
         "--output",
@@ -115,7 +125,9 @@ def main():
     args = parser.parse_args()
 
     # Dispatch to appropriate command
-    if args.command == "run":
+    if args.command == "init":
+        return init_command(args)
+    elif args.command == "run":
         return run_command(args)
     elif args.command == "tts":
         return tts_command(args)

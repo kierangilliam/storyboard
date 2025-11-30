@@ -1,6 +1,6 @@
 [project]
-name = "storyboard"
-version = "0.1.0"
+name = "storyboard-cli"
+version = "0.1.1"
 description = "Storyboard scene generation CLI tool"
 requires-python = ">=3.11"
 dependencies = [
@@ -26,4 +26,6 @@ packages = ["storyboard"]
 dev-dependencies = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
+    "build>=1.0.0",
+    "twine>=5.0.0",
 ]

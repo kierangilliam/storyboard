@@ -46,8 +46,10 @@ def _get_tts_model_from_config(config: StoryboardConfig) -> TTSModelDefinition:
     """Convert config model reference to TTSModelDefinition."""
     model_ref = config.tts.default_model
     if model_ref.vendor == "gemini":
-        if model_ref.model == "gemini-2.5-flash-preview-tts":
-            return TTSModels.gemini("flash")
+        return TTSModelDefinition(
+            vendor="gemini",
+            model_variant=model_ref.model,
+        )
     raise ValueError(f"Unsupported TTS model: {model_ref.vendor}/{model_ref.model}")
 
 

@@ -31,7 +31,7 @@ ImageModel: TypeAlias = Literal["gemini-3-pro-image-preview", "gemini-2.5-flash-
 TTSVendor: TypeAlias = Literal["gemini"]
 TTSModel: TypeAlias = Literal[
     "gemini-2.5-flash-preview-tts",
-    "gemini-2.5-pro-tts",
+    "gemini-2.5-pro-preview-tts",
     "gemini-2.5-flash-lite-preview-tts",
 ]
 TTSVoice: TypeAlias = Literal[

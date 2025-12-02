@@ -28,7 +28,7 @@ class TTSModels:
     def gemini(model: Literal["flash", "pro", "lite"] = "flash") -> TTSModelDefinition:
         model_map = {
             "flash": "gemini-2.5-flash-preview-tts",
-            "pro": "gemini-2.5-pro-tts",
+            "pro": "gemini-2.5-pro-preview-tts",
             "lite": "gemini-2.5-flash-lite-preview-tts",
         }
         return TTSModelDefinition(

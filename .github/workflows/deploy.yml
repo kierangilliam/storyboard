@@ -1,0 +1,31 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DOKPLOY_URL: https://vps.limn.so
+      DOKPLOY_APP_ID: jhOx025P0g3sMVDVrEeKZ
+      DOKPLOY_API_TOKEN: ${{ secrets.DOKPLOY_API_TOKEN }}
+      CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+      CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+    steps:
+      - name: Deploy through Cloudflare Access
+        run: |
+          status=$(curl --fail-with-body --silent --show-error --max-time 60 \
+            --output /dev/null --write-out '%{http_code}' \
+            -X POST "$DOKPLOY_URL/api/application.deploy" \
+            -H "Content-Type: application/json" \
+            -H "x-api-key: $DOKPLOY_API_TOKEN" \
+            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
+            -d "{\"applicationId\": \"$DOKPLOY_APP_ID\"}")
+          test "$status" = 200
